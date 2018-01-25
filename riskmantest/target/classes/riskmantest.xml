@@ -64,5 +64,6 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
     </flow>
     <flow name="riskmantestFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
+        <logger level="INFO" doc:name="Logger"/>
     </flow>
 </mule>
