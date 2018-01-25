@@ -62,4 +62,7 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
         <object-to-string-transformer mimeType="application/csv" doc:name="Object to String" metadata:id="15d977b4-a771-44cc-9f92-b8bdabfc1fd6"/>
         <logger message="Download finished!" level="INFO" doc:name="Logger - Finish"/>
     </flow>
+    <flow name="riskmantestFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
+    </flow>
 </mule>
