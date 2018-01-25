@@ -32,11 +32,6 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
         <logger message="Query Successfully!" level="INFO" doc:name="Logger"/>
     </flow>
-    <flow name="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="Copy_of_HTTP"/>
-        <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Logger"/>
-        <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Copy_of_Logger"/>
-    </flow>
     
     
     <flow name="allincidents">
@@ -67,9 +62,5 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
         <invoke object-ref="fileReader" method="getFileAsStream" methodArguments="#[flowVars.filename]" name="Invoke2" doc:name="Invoke"/>
         <object-to-string-transformer mimeType="application/csv" doc:name="Object to String" metadata:id="15d977b4-a771-44cc-9f92-b8bdabfc1fd6"/>
         <logger message="Download finished!" level="INFO" doc:name="Logger - Finish"/>
-    </flow>
-    <flow name="riskmantestFlow">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="HTTP"/>
-        <logger level="INFO" doc:name="Logger" message="Request receiveds"/>
     </flow>
 </mule>
