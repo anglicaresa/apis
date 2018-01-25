@@ -35,6 +35,7 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
     <flow name="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="Copy_of_HTTP"/>
         <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Logger"/>
+        <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Copy_of_Logger"/>
     </flow>
     
     
