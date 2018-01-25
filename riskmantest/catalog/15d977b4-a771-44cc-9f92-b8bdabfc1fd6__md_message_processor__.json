@@ -1,0 +1,10 @@
+{
+    "inputMessageMetadata": {},
+    "outputMessageMetadata": {
+        "outboundProperties": {
+            "filename": {}
+        }
+    },
+    "id": "15d977b4-a771-44cc-9f92-b8bdabfc1fd6",
+    "version": "5.2.0.0"
+}

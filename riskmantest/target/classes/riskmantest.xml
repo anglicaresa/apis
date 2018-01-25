@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8088" doc:name="HTTP Listener Configuration"/>
+    <db:generic-config name="MSSQL_Riskman" url="jdbc:sqlserver://10.10.1.114:1433;databaseName=RiskmanTest;user=asadwh;password=asadwh201601" driverClassName="com.microsoft.sqlserver.jdbc.SQLServerDriver" doc:name="Generic Database Configuration"/>
+    
+    <spring:beans>
+    	<spring:bean class="au.com.anglicaresa.api.FileReader" name="fileReader"></spring:bean>
+    	<spring:bean class="au.com.anglicaresa.api.TestThing" name="testThing"></spring:bean>
+    	
+    </spring:beans>
+    <flow name="incidentquerybyid">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/incidentbyid/{id}" doc:name="HTTP"/>
+        <set-variable variableName="id" value="#[message.inboundProperties['http.uri.params'].id]" doc:name="id"/>
+        <db:select config-ref="MSSQL_Riskman" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT [ID]
+      ,[IncidentInvolved]
+      ,[Incident_Location]
+  FROM [RiskmanTest].[dbo].[IncidentsForReview]
+where [ID]= #[flowVars.id]]]></db:parameterized-query>
+        </db:select>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger message="Query Successfully!" level="INFO" doc:name="Logger"/>
+    </flow>
+    
+    
+    <flow name="allincidents">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/allincidents" doc:name="HTTP"/>
+        <db:select config-ref="MSSQL_Riskman" doc:name="Database">
+            <db:parameterized-query><![CDATA[SELECT [ID]
+      ,[IncidentInvolved]
+      ,[Incident_Location]
+  FROM [RiskmanTest].[dbo].[IncidentsForReview]
+  Order by Incident_Location]]></db:parameterized-query>
+        </db:select>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+    </flow>
+    <flow name="pulse">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/pulse" doc:name="HTTP"/>
+        <logger message="Current path is #[message.inboundProperties.'http.request.path']" level="INFO" doc:name="Logger"/>
+        <invoke object-ref="fileReader" method="pulse" name="Invoke1" doc:name="Invoke"/>
+        <set-payload value="#['Path:  ' + message.inboundProperties.'http.request.path' + ',  Timestamp ' + server.dateTime.format('dd/MM/yyyy')]" doc:name="Set Payload"/>
+        <set-variable variableName="serverpath" value="#['//duey/T1/fin1/data/fintrain/export/ASADWH/']" doc:name="Variable - set Server Path - PLEASE CHANGE"/>
+        <file:outbound-endpoint path="#[flowVars.serverpath]" outputPattern="#[message.id]" responseTimeout="10000" doc:name="File"/>
+    </flow>
+    <flow name="getfile">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/getfile" doc:name="HTTP"/>
+        <logger message="Request received" level="INFO" doc:name="Logger"/>
+        <set-variable variableName="serverpath" value="#['//duey/T1/fin1/data/fintrain/export/ASADWH/']" doc:name="Variable - set Server Path - PLEASE CHANGE"/>
+        <set-variable variableName="filename" value="#[flowVars.serverpath + message.inboundProperties.'http.query.params'.filename]" doc:name="Variable - Get full path for file"/>
+        <logger message="The file is: #[flowVars.filename]" level="INFO" doc:name="Logger - FullPath"/>
+        <invoke object-ref="fileReader" method="getFileAsStream" methodArguments="#[flowVars.filename]" name="Invoke2" doc:name="Invoke"/>
+        <object-to-string-transformer mimeType="application/csv" doc:name="Object to String" metadata:id="15d977b4-a771-44cc-9f92-b8bdabfc1fd6"/>
+        <logger message="Download finished!" level="INFO" doc:name="Logger - Finish"/>
+    </flow>
+</mule>
