@@ -32,11 +32,6 @@ where [ID]= #[flowVars.id]]]></db:parameterized-query>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
         <logger message="Query Successfully!" level="INFO" doc:name="Logger"/>
     </flow>
-    <flow name="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn">
-        <http:listener config-ref="HTTP_Listener_Configuration" path="/" doc:name="Copy_of_HTTP"/>
-        <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Logger"/>
-        <logger message="Request receiveds" level="INFO" doc:name="Copy_of_Copy_of_Logger"/>
-    </flow>
     
     
     <flow name="allincidents">
