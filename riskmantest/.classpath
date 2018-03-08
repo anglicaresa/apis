@@ -11,6 +11,8 @@
 	<classpathentry kind="src" path="src/main/wsdl"/>
 	<classpathentry kind="src" path="src/test/munit"/>
 	<classpathentry kind="lib" path="C:/AnypointStudio/JDBC/Microsoft JDBC Driver 6.0 for SQL Server/sqljdbc_6.0/enu/jre8/sqljdbc42.jar"/>
+	<classpathentry kind="lib" path="C:/Frank/AnypointStudio/lib/sqljdbc42.jar"/>
 	<classpathentry exported="true" kind="con" path="MULE_RUNTIME/org.mule.tooling.server.3.9.0"/>
+	<classpathentry kind="con" path="MULE_LIB/Salesforce/org.mule.tooling.ui.contribution.sfdc.3.5.0"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
