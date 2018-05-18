@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+  <spring:beans>
+    <spring:bean name="invoke_encrypt" class="blowfish.mule.packag.encrypt">
+   </spring:bean>
+    <spring:bean name="invoke_decrypt" class="blowfish.mule.packag.decrypt">
+    </spring:bean>
+    
+    <spring:bean name="invoke_savetofile" class="blowfish.mule.packag.writetofile">
+    </spring:bean>
+  
+  </spring:beans>
+  
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <flow name="blowfishencrytptionFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/encrypt" allowedMethods="POST" doc:name="HTTP_Encrypt"/>
+        <set-variable variableName="inputstring" value="#[json:strClearText]" doc:name="Variable_inputstring"/>
+        <set-variable variableName="adminkey" value="#[json:strKey]" doc:name="Variable_adminkey"/>
+        <logger message="Original input string is #[flowVars.inputstring]" level="INFO" doc:name="Logger"/>
+        <invoke name="Invoke_Encrypt" object-ref="invoke_encrypt" method="encrypt_blowfish" doc:name="Invoke_Encrypt" methodArguments="#[flowVars.inputstring],#[flowVars.adminkey]"/>
+        <set-variable variableName="EncryptString" value="#[payload]" doc:name="EncryptString"/>
+        <flow-ref name="writetofile_subflow" doc:name="Flow Reference"/>
+        <logger message="Encrypted string is #[flowVars.EncryptString]" level="INFO" doc:name="Logger"/>
+        <flow-ref name="decrypt_subflow" doc:name="Call_decrypt_subflow"/>
+    </flow>
+    <sub-flow name="decrypt_subflow">
+        <invoke name="Invoke_Decrypt" object-ref="invoke_decrypt" method="decrypt_blowfish" methodArguments="#[flowVars.EncryptString],#[flowVars.adminkey]" doc:name="Invoke_Decrypt"/>
+        <logger message="Original input string is #[payload]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="writetofile_subflow">
+        <invoke name="Invoke_writetofile" object-ref="invoke_savetofile" method="writestringtofile" doc:name="Invoke_writetofile" methodArguments="#[flowVars.EncryptString]"/>
+        <logger message="write to file successfully!" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+</mule>
