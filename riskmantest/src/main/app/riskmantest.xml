@@ -30,7 +30,7 @@ http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/m
 where [ID]= #[flowVars.id]]]></db:parameterized-query>
         </db:select>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <logger message="Query Successfully!" level="INFO" doc:name="Logger"/>
+        <logger message="Query Successfully!Successfully!" level="INFO" doc:name="Logger"/>
     </flow>
     
     
